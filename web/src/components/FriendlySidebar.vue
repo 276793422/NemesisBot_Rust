@@ -7,7 +7,7 @@ import { useTheme } from '../composables/useTheme'
 import { useWSAPI } from '../composables/useWSAPI'
 import { useUiShellStore } from '../stores/uiShell'
 import { useToast } from '../composables/useToast'
-import { CLASSIC_NAV_GROUPS, filterNavGroups, type NavItem } from '../lib/navConfig'
+import { FRIENDLY_NAV_IDS, itemsByIds, type NavItem } from '../lib/navConfig'
 
 const router = useRouter()
 const route = useRoute()
@@ -21,6 +21,9 @@ const { request } = useWSAPI()
 const estopEngaged = ref(false)
 const estopBusy = ref(false)
 let estopTimer: ReturnType<typeof setInterval> | undefined
+
+/** Flat nav — former “更多” items released to the same list */
+const navItems = computed(() => itemsByIds(FRIENDLY_NAV_IDS))
 
 function navigate(item: NavItem) {
   router.push(item.id === 'chat' ? '/' : item.path)
@@ -56,12 +59,10 @@ async function toggleEstop() {
   }
 }
 
-function switchToFriendly() {
-  uiShell.setMode('friendly')
-  toast.success('已切换到简洁界面')
+function switchToClassic() {
+  uiShell.setMode('classic')
+  toast.success('已切换到经典界面')
 }
-
-const visibleNavGroups = computed(() => filterNavGroups(CLASSIC_NAV_GROUPS, { includeUnfinished: false }))
 
 onMounted(() => {
   refreshEstop()
@@ -74,9 +75,9 @@ onUnmounted(() => {
 
 <template>
   <aside
-    class="sidebar"
+    class="sidebar friendly-sidebar"
     :class="{ collapsed: appStore.sidebarCollapsed, 'mobile-open': appStore.showMobileSidebar }"
-    data-shell="classic"
+    data-shell="friendly"
   >
     <div class="sidebar-header">
       <div class="sidebar-logo">
@@ -99,11 +100,10 @@ onUnmounted(() => {
       <span>{{ appStore.connected ? '已连接' : '未连接' }}</span>
     </div>
 
-    <nav class="sidebar-nav" aria-label="导航">
-      <div v-for="group in visibleNavGroups" :key="group.title" class="nav-section">
-        <div class="nav-section-title">{{ group.title }}</div>
+    <nav class="sidebar-nav" aria-label="主要导航">
+      <div class="nav-section">
         <button
-          v-for="item in group.items"
+          v-for="item in navItems"
           :key="item.id"
           type="button"
           class="nav-item"
@@ -124,13 +124,13 @@ onUnmounted(() => {
         <span class="nav-icon">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg>
         </span>
-        <span class="nav-label">{{ estopBusy ? '处理中…' : (estopEngaged ? '⛔ 急停中（点此释放）' : '急停 E-Stop') }}</span>
+        <span class="nav-label">{{ estopBusy ? '处理中…' : (estopEngaged ? '急停中（点此释放）' : '急停') }}</span>
       </button>
-      <button type="button" class="nav-item" title="切换到简洁界面" @click="switchToFriendly">
+      <button type="button" class="nav-item" title="切换到经典界面" @click="switchToClassic">
         <span class="nav-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
         </span>
-        <span class="nav-label">简洁界面</span>
+        <span class="nav-label">经典界面</span>
       </button>
       <button type="button" class="nav-item" :title="theme === 'dark' ? '浅色模式' : '深色模式'" @click="toggleTheme()">
         <span class="nav-icon">
@@ -166,12 +166,5 @@ onUnmounted(() => {
   color: #ff4d4d;
   background: rgba(255, 77, 77, 0.14);
   font-weight: 600;
-}
-.estop-btn.engaged .nav-icon {
-  animation: estop-pulse 1.4s ease-in-out infinite;
-}
-@keyframes estop-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.35; }
 }
 </style>
