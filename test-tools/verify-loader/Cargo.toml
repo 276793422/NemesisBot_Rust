@@ -1,15 +1,15 @@
 [package]
-name = "exe-sign-tool"
+name = "verify-loader"
 version.workspace = true
 license.workspace = true
 edition.workspace = true
 
-# v3：纯 bin（lib 直接验签，不加载 DLL）。verify 用 nemesis-verify lib（含联网吊销）。
 [[bin]]
-name = "exe-sign-tool"
+name = "verify-loader"
 path = "src/main.rs"
 
 [dependencies]
 nemesis-verify = { path = "../../crates/nemesis-verify" }
 clap = { workspace = true }
 anyhow = { workspace = true }
+libloading = { workspace = true }
