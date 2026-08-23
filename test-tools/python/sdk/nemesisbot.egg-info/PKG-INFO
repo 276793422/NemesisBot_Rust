@@ -1,3 +1,28 @@
+Metadata-Version: 2.4
+Name: nemesisbot
+Version: 0.1.0
+Summary: Python SDK for driving NemesisBot as a subprocess (spawn gateway --local, chat over WebSocket)
+License: AGPL-3.0-only
+Project-URL: Homepage, https://github.com/276793422/NemesisBot_Rust
+Keywords: nemesisbot,ai-agent,agent-sdk,llm,subprocess
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: GNU Affero General Public License v3
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Operating System :: MacOS
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: websockets>=12.0
+Provides-Extra: dev
+Requires-Dist: pytest>=8.0; extra == "dev"
+
 # NemesisBot Python SDK (minimal)
 
 Drive a NemesisBot agent as a subprocess from Python: spawn
