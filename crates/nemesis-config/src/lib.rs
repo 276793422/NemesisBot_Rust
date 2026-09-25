@@ -2110,6 +2110,13 @@ pub struct SecurityConfig {
     /// （与 CFG-01 directory_rules 同族 round-trip 删键 bug）。
     #[serde(default)]
     pub audit_chain_enabled: bool,
+    // T4（追齐计划 D2a，2026-09-24）：子进程环境凭据清洗开关（默认开）。
+    // runtime 侧 security_setup.rs 构造期同步到
+    // nemesis_utils::env_sanitize 进程级静态；三处 spawn 点
+    // （agent loop exec/run_checks 闸 + nemesis-tools shell/async_shell）
+    // 统一查询。
+    #[serde(default = "default_true")]
+    pub sanitize_child_env: bool,
     #[serde(default)]
     pub file_rules: Option<FileSecurityRules>,
     // CFG-01（2026-09-16 横扫存量加固）：磁盘/出厂模板真相源键名是
@@ -2202,6 +2209,7 @@ impl Default for SecurityConfig {
             audit_log_file_enabled: true,
             synchronous_mode: false,
             audit_chain_enabled: false,
+            sanitize_child_env: true,
             file_rules: None,
             directory_rules: None,
             process_rules: None,
@@ -3314,7 +3322,7 @@ fn default_max_concurrent_turns() -> i64 {
 fn default_spill_retention_days() -> i64 {
     7
 }
-/// 429 重试环默认次数（2026-09-17 裁决④：对齐竞品口径，默认 10）。
+/// 429 重试环默认次数（2026-09-17 裁决④：对齐业界口径，默认 10）。
 fn default_rate_limit_retries() -> i64 {
     10
 }
